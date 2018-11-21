@@ -125,7 +125,8 @@ while generation < generationLimit:
 
     #		3 MUTATE the resulting offspring AND 4 EVALUATE
     for x in range(popSize):
-        population[x].mutate(mutationRate)
+        population[x].mutate(mutationRate, chromosomeAmount)
+        population[x].conflictRes(chromosomeAmount)
         population[x].fitnessCalc(chromosomeAmount,dataSet)
         #print(population[x].fitness)
         fitCheck = fitCheck + population[x].fitness
@@ -135,9 +136,16 @@ while generation < generationLimit:
 
     print('Best:', best.fitness)
 
+
+
     offspring.clear()
     print('AVG fitness:',fitCheck / popSize)
     avgFitness = fitCheck / popSize
+
+
+    for rule in best.rules:
+        print(rule)
+
 
     print('')
 
@@ -147,4 +155,12 @@ while generation < generationLimit:
             done = True
     #	DONE
     # END
+
+chrm = int(chromosomeAmount / 10)
+for x in range(chromosomeAmount):
+    if x % chrm == 0:
+        print('')
+    print(best.genes[x],end='')
+
+print('')
 print('convergence at', convergence, 'generations')
