@@ -6,7 +6,9 @@ from random import *
 import copy
 
 seed()
-dataSet = 1
+
+#VARS
+dataSet = 2
 # chromosome length and Population size, and data set
 
 if dataSet == 1:
@@ -16,9 +18,10 @@ else:
 
 popSize = 50
 mutationRate = 0.01
-
+wildLimit = 4
 generationLimit = 50
 
+#not to be altered
 avgFitness = 0.0
 generation = 0
 convergence = 0
@@ -51,6 +54,7 @@ for genes in range(popSize):
 fitCheck = 0
 
 best = population[0]
+newBest = population[0]
 
 #	REPEAT UNTIL DONE
 while generation < generationLimit:
@@ -60,6 +64,7 @@ while generation < generationLimit:
     #		1 SELECT parents
     # tornement
     for x in range(popSize):
+        offspring.append(newBest)
         parent1 = randrange(0, popSize)
         parent2 = randrange(0, popSize)
 
@@ -134,18 +139,30 @@ while generation < generationLimit:
         if population[x].fitness > best.fitness:
             best = population[x]
 
-    print('Best:', best.fitness)
+    newBest = population[0]
+
+    #print('Best:', best.fitness)
 
 
 
     offspring.clear()
-    print('AVG fitness:',fitCheck / popSize)
+    #print('AVG fitness:',fitCheck / popSize)
     avgFitness = fitCheck / popSize
 
 
-    for rule in best.rules:
-        print(rule)
 
+    #print(best.condition)
+    #print('Rules matched by best',len(set(best.compareBestWithDataFile(dataSet,wildLimit))))
+
+    newAvg = 0
+    for x in range(popSize):
+        newAvg = newAvg + len(set(population[x].compareBestWithDataFile(dataSet,wildLimit)))
+        if len(set(population[x].compareBestWithDataFile(dataSet,wildLimit))) > len(set(newBest.compareBestWithDataFile(dataSet,wildLimit))):
+            newBest = population[x]
+
+    avgRes = newAvg / popSize
+    print('New avg', avgRes )
+    print('New best', len(set(newBest.compareBestWithDataFile(dataSet,wildLimit))))
 
     print('')
 
@@ -156,11 +173,11 @@ while generation < generationLimit:
     #	DONE
     # END
 
-chrm = int(chromosomeAmount / 10)
-for x in range(chromosomeAmount):
-    if x % chrm == 0:
-        print('')
-    print(best.genes[x],end='')
+# chrm = int(chromosomeAmount / 10)
+# for x in range(chromosomeAmount):
+#     if x % chrm == 0:
+#         print('')
+#     print(best.genes[x],end='')
 
 print('')
-print('convergence at', convergence, 'generations')
+#print('convergence at', convergence, 'generations')

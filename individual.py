@@ -11,6 +11,9 @@ data1 = dataFromFile.data('data1.txt', 6)
 data2 = dataFromFile.data('data2.txt', 8)
 data3 = dataFromFile.floatData('data3.txt', 8)
 
+
+#matchedData = []
+
 class individual:
     def __init__(self):
         self.genes = []
@@ -47,7 +50,10 @@ class child:
     def __init__(self):
         self.genes = []
         self.fitness = 0
-        self.rules = []
+        self.conditionsMatched = []
+        self.condition = []
+        self.output = []
+
 
     def populateChild(self, chrom1Head, chrom2Tail):
 
@@ -90,10 +96,9 @@ class child:
 
         #Assign fitness based on matched rules from data
         for j in range(len(condOutPair)):
-            #print(condOutPair[j].output)
+
             for i in range(len(dataToUse)):
-                #if dataToUse[i].output == condOutPair[j].output and dataToUse[i].condition == condOutPair[j].condition:
-                #if countBits(dataToUse[i].condition, condOutPair[j].condition, condLength) == True:
+
                 isMatch = True
                 for x in range(condLength - 1):
                     if condOutPair[j].condition[x] == 2:
@@ -109,9 +114,11 @@ class child:
                     print('Mistake')
                 if isMatch == True and dataToUse[i].output == condOutPair[j].output:
                     self.fitness = self.fitness + 1
-                    self.rules.append(condOutPair[j].condition)
-                    self.rules.append(condOutPair[j].output)
+                    self.conditionsMatched.append(dataToUse[i].condition)
+                    self.condition.append(condOutPair[j].condition)
+                    self.output.append(condOutPair[j].output)
                     break
+
         #print(set(condOutPair.condition))
 
         # #CONFLICT RESOLOUTOION
@@ -209,63 +216,60 @@ class child:
                 break
 
 
+    def compareBestWithDataFile(self, dataSet, wildlimit):
+        if dataSet  == 1:
+         dataToUse = data1
+        elif dataSet == 2:
+         dataToUse = data2
+        elif dataSet == 3:
+         dataToUse = data3
 
-        # condLength = int(chromosomeLength / 10)
-        # count = 0
-        # innerCount = 0
-        # outerCount = 0
-        #
-        # print(self.genes)
-        # for out in range(condLength):
-        #     #print('o',out)
-        #
-        #     for x in range(chromosomeLength):
-        #         if innerCount == condLength:
-        #             innerCount = 0
-        #
-        #         print(self.genes[x + outerCount], self.genes[innerCount])
-        #         if self.genes[x + outerCount] != self.genes[innerCount]:
-        #             count = 0
-        #             #break
-        #         #elif count == condLength - 1: #and self.genes[x] != self.genes[x + condLength]:
-        #         #     if self.genes[x + outerCount] != self.genes[innerCount]:
-        #         #         print('Mistake')
-        #         #         if self.genes[x + outerCount] == 1:
-        #         #             self.genes[x + outerCount] = 0
-        #         #         elif self.genes[x + outerCount] == 0:
-        #         #              self.genes[x + outerCount] = 1
-        #         #
-        #         #     else:
-        #             #break
-        #         elif self.genes[x + outerCount] == self.genes[innerCount]:
-        #             count = count + 1
-        #         innerCount = innerCount + 1
-        #
-        #     outerCount = outerCount + condLength
-        #     innerCount = 0
+        returnData = []
+
+        for j in range(len(dataToUse)):
+            for x in range(len(self.condition)):
+                match = True
+                twoCount = 0
+                for z in range(len(dataToUse[j].condition)):
+
+                    if self.condition[x][z] == 2:
+                        twoCount = twoCount + 1
+                        match = True
+                        continue
+                    elif self.condition[x][z] != dataToUse[j].condition[z]:
+                        match = False
+                        break
+                    elif self.condition[x][z] == dataToUse[j].condition[z]:
+                        match = True
+                        continue
+
+                if match == True and twoCount < wildlimit:
+                    #print('self', self.condition[x])
+                    returnData.append(dataToUse[j])
 
 
-# #Needs two fazes
-# for x in range(length):
-#
-#     if innercount == faze:
-#         innercount = 0
-#
-#     if outtercount == fazeOut:
-#         outtercount = 0
-#
-#     print(c[innercount], d[x])
-#     if d[x] % c[innercount] == 0:
-#         print('Clck')
-#
-#     innercount = innercount + 1
-#     outtercount = outtercount + 1
+
+        return returnData
+
+         # for j in range(len(self.condition)):
+         #
+         #     for i in range(len(dataToUse)):
+         #
+         #         isMatch = True
+         #         for x in range(condLength - 1):
+         #             if condOutPair[j].condition[x] == 2:
+         #                 isMatch = True
+         #                 continue
+         #             elif dataToUse[i].condition[x] != condOutPair[j].condition[x]:
+         #                 isMatch = False
+         #                 break
+         #             elif dataToUse[i].condition[x] == condOutPair[j].condition[x]:
+         #                 isMatch = True
+         #                 continue
+         #         if condOutPair[j].output == 2:
+         #             print('Mistake')
+         #         if isMatch == True and dataToUse[i].output == condOutPair[j].output:
+         #             self.fitness = self.fitness + 1
+         #
 
 
-#For every rule in chromosome
-    #Compare with every other rule in chromosome
-        #if all genes in condition the same
-            #if output different
-                #flip bit of one output
-            #endif
-        #else do nothing

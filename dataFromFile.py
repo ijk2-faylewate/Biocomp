@@ -48,12 +48,3 @@ def floatData(datafile, condLength):
 
     return returnData
 
-
-
-
-
-#x = data('data1.txt', 6)
-#z = floatData('data3.txt',8)
-
-#for w in z:
-#    print(w.condition,w.output)
