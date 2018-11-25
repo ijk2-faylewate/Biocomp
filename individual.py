@@ -14,6 +14,27 @@ data3 = dataFromFile.floatData('data3.txt', 8)
 
 #matchedData = []
 
+def compare(condOutPair,dataToUse, condLength):
+    match = True
+    for r in range(condLength - 1):
+        if condOutPair[r] == 2:
+            continue
+        elif condOutPair[r] == dataToUse[r]:
+            continue
+        elif condOutPair[r] != dataToUse[r]:
+            match = False
+
+    return match
+
+def compareOutput(condOutPair, dataToUse):
+    result = False
+    if condOutPair == dataToUse:
+        result = True
+    elif condOutPair != dataToUse:
+        result = False
+    return result
+
+
 class individual:
     def __init__(self):
         self.genes = []
@@ -70,8 +91,9 @@ class child:
 
 
     def fitnessCalc(self,chromosomLength, dataSet):
-        condOutPair = []
 
+        condOutPair = []
+        #print(self.fitness)
         if dataSet  == 1:
             dataToUse = data1
         elif dataSet == 2:
@@ -94,30 +116,70 @@ class child:
             condCount = condCount + condLength
             #print('ou',condOutPair[x].output)
 
+
+        setLength = len(dataToUse)
+
+
+        for x in range(setLength):
+            for j in range(10):
+                if compare(condOutPair[j].condition, dataToUse[x].condition, condLength) is True:
+                    if compareOutput(condOutPair[j].output,dataToUse[x].output) is True:
+                        self.fitness = self.fitness + 1
+                    else:
+                        continue
+
+                break
+
+
+
+
+
+
+
+
+        #             if condOutPair[i].output == dataToUse[x].output:
+        #                 self.fitness = self.fitness + 1
+        #                 self.conditionsMatched.append(condOutPair[i].condition)
+        #                 self.conditionsMatched.append(condOutPair[i].output)
+        #             else:
+        #                 break
+
         #Assign fitness based on matched rules from data
-        for j in range(len(condOutPair)):
+        #Check rule against dataset, if match go to next rule, restart from begining of dataset
 
-            for i in range(len(dataToUse)):
+        # for j in range(10):
+        #     for i in range(len(dataToUse)):
+        #         isMatch = True
+        #         twoCount = 0
+        #         if self.fitness >= 15:
+        #             piss = 'y'
+        #         for x in range(condLength - 1):
+        #             if condOutPair[j].condition[x] == 2:
+        #                 #twoCount = twoCount + 1
+        #                 #isMatch = True
+        #                 continue
+        #             elif dataToUse[i].condition[x] != condOutPair[j].condition[x]:
+        #                 isMatch = False
+        #                 #break
+        #             elif dataToUse[i].condition[x] == condOutPair[j].condition[x]:
+        #                 #isMatch = True
+        #                 continue
+        #             # if condOutPair[j].output == 2:
+        #             #     print('Mistake')
+        #         if isMatch == True and dataToUse[i].output == condOutPair[j].output:# and twoCount <=4:
+        #             self.fitness = self.fitness + 1
+        #             self.conditionsMatched.append(dataToUse[i].condition)
+        #             self.condition.append(condOutPair[j].condition)
+        #             self.output.append(condOutPair[j].output)
+        #         break
 
-                isMatch = True
-                for x in range(condLength - 1):
-                    if condOutPair[j].condition[x] == 2:
-                        isMatch = True
-                        continue
-                    elif dataToUse[i].condition[x] != condOutPair[j].condition[x]:
-                        isMatch = False
-                        break
-                    elif dataToUse[i].condition[x] == condOutPair[j].condition[x]:
-                        isMatch = True
-                        continue
-                if condOutPair[j].output == 2:
-                    print('Mistake')
-                if isMatch == True and dataToUse[i].output == condOutPair[j].output:
-                    self.fitness = self.fitness + 1
-                    self.conditionsMatched.append(dataToUse[i].condition)
-                    self.condition.append(condOutPair[j].condition)
-                    self.output.append(condOutPair[j].output)
-                    break
+
+
+
+        #print(len(self.conditionsMatched))
+
+        #print(self.fitness)
+        #print(len((self.conditionsMatched)))
 
         #print(set(condOutPair.condition))
 
@@ -225,7 +287,9 @@ class child:
          dataToUse = data3
 
         returnData = []
-
+        if self.fitness > 15:
+            pass
+            #print('')
         for j in range(len(dataToUse)):
             for x in range(len(self.condition)):
                 match = True
@@ -234,42 +298,20 @@ class child:
 
                     if self.condition[x][z] == 2:
                         twoCount = twoCount + 1
-                        match = True
+                        #match = True
                         continue
                     elif self.condition[x][z] != dataToUse[j].condition[z]:
                         match = False
-                        break
-                    elif self.condition[x][z] == dataToUse[j].condition[z]:
-                        match = True
+                        #break
+                    elif self.condition[x][z] == dataToUse[j].condition[z]: # and self.output[x] == dataToUse[j].output:
+                        #match = True
                         continue
 
-                if match == True and twoCount < wildlimit:
+                if match == True: #and twoCount <= wildlimit:
                     #print('self', self.condition[x])
+                    #self.fitness = self.fitness + 1
                     returnData.append(dataToUse[j])
-
+                break
 
 
         return returnData
-
-         # for j in range(len(self.condition)):
-         #
-         #     for i in range(len(dataToUse)):
-         #
-         #         isMatch = True
-         #         for x in range(condLength - 1):
-         #             if condOutPair[j].condition[x] == 2:
-         #                 isMatch = True
-         #                 continue
-         #             elif dataToUse[i].condition[x] != condOutPair[j].condition[x]:
-         #                 isMatch = False
-         #                 break
-         #             elif dataToUse[i].condition[x] == condOutPair[j].condition[x]:
-         #                 isMatch = True
-         #                 continue
-         #         if condOutPair[j].output == 2:
-         #             print('Mistake')
-         #         if isMatch == True and dataToUse[i].output == condOutPair[j].output:
-         #             self.fitness = self.fitness + 1
-         #
-
-

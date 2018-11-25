@@ -1,4 +1,5 @@
-#from typing import Any, Union
+#NOTE: can generalize to 2 rules for data 1, for an avg of 24, best 25. Settings: Population 50, mutation rate 0.02,
+#between 375 and 400 generations
 
 from individual import individual
 from individual import child
@@ -8,7 +9,7 @@ import copy
 seed()
 
 #VARS
-dataSet = 2
+dataSet = 1
 # chromosome length and Population size, and data set
 
 if dataSet == 1:
@@ -17,9 +18,9 @@ else:
     chromosomeAmount = 80
 
 popSize = 50
-mutationRate = 0.01
-wildLimit = 4
-generationLimit = 50
+mutationRate = 0.02
+
+generationLimit = 400
 
 #not to be altered
 avgFitness = 0.0
@@ -44,13 +45,7 @@ for genes in range(popSize):
     #indiv.fitnessCalc()
     population.append(indiv)
 
-# Fitness Check
-#for candidates in population:
-    #fitCheck = fitCheck + candidates.fitness
-    #print(candidates.genes)
-    # print(candidates.fitness)
 
-#print('AVG fitness: ', fitCheck / popSize)
 fitCheck = 0
 
 best = population[0]
@@ -58,13 +53,15 @@ newBest = population[0]
 
 #	REPEAT UNTIL DONE
 while generation < generationLimit:
+    print('')
     avgFitness = 0.0
     generation = generation + 1
     print('Gen = ',generation)
     #		1 SELECT parents
     # tornement
-    for x in range(popSize):
-        offspring.append(newBest)
+    #offspring.append(best)
+    for x in range(popSize ):
+        #offspring.append(best)
         parent1 = randrange(0, popSize)
         parent2 = randrange(0, popSize)
 
@@ -72,23 +69,13 @@ while generation < generationLimit:
             offspring.append(population[parent1])
         else:
             offspring.append(population[parent2])
+        offspring.append(best)
+    #offspring.append(best)
 
-   #
-    # Fitness Check
-    count = 0
-    fitCheck = 0
-    #for candidates in offspring:
-     #   count = count + 1
-        #fitCheck = fitCheck + candidates.fitness
-        #print(count,': ',candidates.genes)
-        # print(candidates.fitness)
-
-    #print('fitCheck: ', fitCheck)
-    #print('AVG fitness:', fitCheck / popSize)
     fitCheck = 0
 
     # 2 RECOMBINE pairs of parents (typically in range (0.6, 0.9)) CURRENTLY NOT 6 TO 9
-
+    print('')
     oneHead = []
     oneTail = []
     twoHead = []
@@ -111,8 +98,8 @@ while generation < generationLimit:
             twoTail.append(offspring[x + halfway].genes[i])
 
 
-        child1 = child()
-        child2 = child()
+        child1 = copy.deepcopy(child())
+        child2 = copy.deepcopy(child())
 
         child1.populateChild(oneHead, twoTail)
         child2.populateChild(twoHead, oneTail)
@@ -141,12 +128,12 @@ while generation < generationLimit:
 
     newBest = population[0]
 
-    #print('Best:', best.fitness)
+    print('Best:', best.fitness)
 
 
 
     offspring.clear()
-    #print('AVG fitness:',fitCheck / popSize)
+    print('AVG fitness:',fitCheck / popSize)
     avgFitness = fitCheck / popSize
 
 
@@ -154,17 +141,22 @@ while generation < generationLimit:
     #print(best.condition)
     #print('Rules matched by best',len(set(best.compareBestWithDataFile(dataSet,wildLimit))))
 
-    newAvg = 0
-    for x in range(popSize):
-        newAvg = newAvg + len(set(population[x].compareBestWithDataFile(dataSet,wildLimit)))
-        if len(set(population[x].compareBestWithDataFile(dataSet,wildLimit))) > len(set(newBest.compareBestWithDataFile(dataSet,wildLimit))):
-            newBest = population[x]
-
-    avgRes = newAvg / popSize
-    print('New avg', avgRes )
-    print('New best', len(set(newBest.compareBestWithDataFile(dataSet,wildLimit))))
-
+    # newAvg = 0
+    # for x in range(popSize):
+    #     newAvg = newAvg + len(set(population[x].compareBestWithDataFile(dataSet,wildLimit)))
+    #     if len(set(population[x].compareBestWithDataFile(dataSet,wildLimit))) > len(set(newBest.compareBestWithDataFile(dataSet,wildLimit))):
+    #         newBest = population[x]
+    #
+    # avgRes = newAvg / popSize
+    # print('New avg', avgRes )
+    # print('New best', len(set(newBest.compareBestWithDataFile(dataSet,wildLimit))))
+    #
+    # print(newBest.condition)
+    # print(newBest.output)
+    #print(best.genes)
     print('')
+    print(best.conditionsMatched)
+    #offspring.append(best)
 
     if done == False:
         if avgFitness == float(best.fitness):
@@ -173,11 +165,11 @@ while generation < generationLimit:
     #	DONE
     # END
 
-# chrm = int(chromosomeAmount / 10)
-# for x in range(chromosomeAmount):
-#     if x % chrm == 0:
-#         print('')
-#     print(best.genes[x],end='')
+chrm = int(chromosomeAmount / 10)
+for x in range(chromosomeAmount):
+    if x % chrm == 0:
+        print('')
+    print(best.genes[x],end='')
 
-print('')
+
 #print('convergence at', convergence, 'generations')
