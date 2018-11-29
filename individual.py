@@ -2,18 +2,31 @@ from random import*
 from ruleStructure import conditionAndOutput
 #from ruleStructure import countBits
 import dataFromFile
+#import data3Tools
 
 seed()
+#Lists for test and train
+testData = []
+trainingData = []
 
-#wildCard = False
-
+#Data sets
 data1 = dataFromFile.data('data1.txt', 6)
 data2 = dataFromFile.data('data2.txt', 8)
 data3 = dataFromFile.floatData('data3.txt', 8)
 
+#count = 0
 
-#matchedData = []
+#Seperate training and test data in Data3
+for x in range(len(data3)):
+    if x % 3 == 0:
+        testData.append(data3[x])
+    else:
+        trainingData.append(data3[x])
+        #print(count)
+        #count = count + 1
 
+
+#Compare conditions of two rules
 def compare(condOutPair,dataToUse, condLength):
     match = True
     for r in range(condLength - 1):
@@ -26,6 +39,7 @@ def compare(condOutPair,dataToUse, condLength):
 
     return match
 
+#Compare output of two rules
 def compareOutput(condOutPair, dataToUse):
     result = False
     if condOutPair == dataToUse:
@@ -34,14 +48,14 @@ def compareOutput(condOutPair, dataToUse):
         result = False
     return result
 
-
+#Create initial individuals
 class individual:
     def __init__(self):
         self.genes = []
         self.fitness = 0
 
 
-    #create Gene
+    #initialise gene
     def BinGeneCreateInit(self, geneLength):
         condLength = int(geneLength / 10)
         count = 0
@@ -49,16 +63,16 @@ class individual:
 
             #Generate random chromosomes
             if count == condLength - 1:
-                cock = randrange(0,2)
+                bin = randrange(0,2)
                 count = 0
             elif count < condLength - 1:
-                cock = randrange(0,3)
+                bin = randrange(0,3)
                 count = count + 1
-            self.genes.append(cock)
+            self.genes.append(bin)
 
 
 
-    #Calculate fitness from number of chromosomes that == 1
+    #Calculate fitness from number of chromosomes that == 1. OLD, NO LONGER IN USE
     def fitnessCalc(self):
         for genes in self.genes:
             if genes == 1:
@@ -67,6 +81,7 @@ class individual:
     #def clearPop(self):
      #   self.genes.clear()
 
+#Post crossover population
 class child:
     def __init__(self):
         self.genes = []
@@ -75,7 +90,7 @@ class child:
         self.condition = []
         self.output = []
 
-
+    #Combine head and tail for child
     def populateChild(self, chrom1Head, chrom2Tail):
 
         for x in chrom1Head:
@@ -87,19 +102,19 @@ class child:
             self.genes.append(x)
 
 
-        #print('fin',self.genes)
 
 
+    #Calculate Fitness of individals
     def fitnessCalc(self,chromosomLength, dataSet):
 
+
         condOutPair = []
-        #print(self.fitness)
         if dataSet  == 1:
             dataToUse = data1
         elif dataSet == 2:
             dataToUse = data2
         elif dataSet == 3:
-            dataToUse = data3
+            dataToUse = trainingData
 
         chromLength = chromosomLength
         condLength = int(chromosomLength / 10)
@@ -119,95 +134,25 @@ class child:
 
         setLength = len(dataToUse)
 
-
+        #Calculate fitnes by comparison with data set
         for x in range(setLength):
             for j in range(10):
                 if compare(condOutPair[j].condition, dataToUse[x].condition, condLength) is True:
                     if compareOutput(condOutPair[j].output,dataToUse[x].output) is True:
                         self.fitness = self.fitness + 1
-                    else:
-                        continue
+                        if self.fitness > 17:
+                            stop = 'k'
+                        self.condition.append(condOutPair[j].condition)
+                        self.output.append(dataToUse[x].output)
+                    #else:
+                     #   continue
 
-                break
-
-
-
-
-
-
-
-
-        #             if condOutPair[i].output == dataToUse[x].output:
-        #                 self.fitness = self.fitness + 1
-        #                 self.conditionsMatched.append(condOutPair[i].condition)
-        #                 self.conditionsMatched.append(condOutPair[i].output)
-        #             else:
-        #                 break
-
-        #Assign fitness based on matched rules from data
-        #Check rule against dataset, if match go to next rule, restart from begining of dataset
-
-        # for j in range(10):
-        #     for i in range(len(dataToUse)):
-        #         isMatch = True
-        #         twoCount = 0
-        #         if self.fitness >= 15:
-        #             piss = 'y'
-        #         for x in range(condLength - 1):
-        #             if condOutPair[j].condition[x] == 2:
-        #                 #twoCount = twoCount + 1
-        #                 #isMatch = True
-        #                 continue
-        #             elif dataToUse[i].condition[x] != condOutPair[j].condition[x]:
-        #                 isMatch = False
-        #                 #break
-        #             elif dataToUse[i].condition[x] == condOutPair[j].condition[x]:
-        #                 #isMatch = True
-        #                 continue
-        #             # if condOutPair[j].output == 2:
-        #             #     print('Mistake')
-        #         if isMatch == True and dataToUse[i].output == condOutPair[j].output:# and twoCount <=4:
-        #             self.fitness = self.fitness + 1
-        #             self.conditionsMatched.append(dataToUse[i].condition)
-        #             self.condition.append(condOutPair[j].condition)
-        #             self.output.append(condOutPair[j].output)
-        #         break
+                #else:
+                    #continue
+                    break
 
 
-
-
-        #print(len(self.conditionsMatched))
-
-        #print(self.fitness)
-        #print(len((self.conditionsMatched)))
-
-        #print(set(condOutPair.condition))
-
-        # #CONFLICT RESOLOUTOION
-        # check = False
-        #
-        # #For all genes
-        # for genesCount in range(len(self.genes)):
-        #     #For all rules
-        #      for x in range(len(condOutPair)):
-        #          #For genes in the conditions of those rules
-        #          for i in range(len(condOutPair[x].condition)):
-        #             if self.genes[genesCount] != condOutPair[x].condition[i]:
-        #                  check = False
-        #                  break
-        #             else:
-        #                 check = True
-        #
-        #          if check == True:
-        #              if sel.genes
-
-             #       elif i == condLength - 1 and genes != condOutPair[x].output:
-              #          genes = 'g'
-
-        #print('c', condOutPair[x].condition,'Out', condOutPair[x].output)
-
-
-
+    #Mutate genes. Bit flip.
     def mutate(self, mutationRate, chromosomeLength):
         testCount = 0
         condLength = int(chromosomeLength / 10)
@@ -278,40 +223,38 @@ class child:
                 break
 
 
-    def compareBestWithDataFile(self, dataSet, wildlimit):
-        if dataSet  == 1:
-         dataToUse = data1
-        elif dataSet == 2:
-         dataToUse = data2
-        elif dataSet == 3:
-         dataToUse = data3
+    #Calculate percentage of correclty predidcted outputs in test set
+    def test(self):
+        isMatch = 0
+        condOutPair = []
+        chromLength = 80
+        condLength = int(chromLength / 10)
 
-        returnData = []
-        if self.fitness > 15:
-            pass
-            #print('')
-        for j in range(len(dataToUse)):
-            for x in range(len(self.condition)):
-                match = True
-                twoCount = 0
-                for z in range(len(dataToUse[j].condition)):
-
-                    if self.condition[x][z] == 2:
-                        twoCount = twoCount + 1
-                        #match = True
-                        continue
-                    elif self.condition[x][z] != dataToUse[j].condition[z]:
-                        match = False
-                        #break
-                    elif self.condition[x][z] == dataToUse[j].condition[z]: # and self.output[x] == dataToUse[j].output:
-                        #match = True
-                        continue
-
-                if match == True: #and twoCount <= wildlimit:
-                    #print('self', self.condition[x])
-                    #self.fitness = self.fitness + 1
-                    returnData.append(dataToUse[j])
+        # Seperate temporarily into condition/output pairs
+        condCount = 0
+        for x in self.genes:
+            if condCount == chromLength:
                 break
+            rule = conditionAndOutput()
+
+            rule.collectConditionOutput(condLength, condCount, self.genes)
+            condOutPair.append(rule)
+            condCount = condCount + condLength
 
 
-        return returnData
+        testLeng = len(testData)
+        for y in range(testLeng):
+            for x in range(10):
+                if compare(condOutPair[x].condition, testData[y].condition, condLength) is True:
+                    if compareOutput(condOutPair[x].output, testData[y].output) is True:
+                        isMatch = isMatch + 1
+
+                    break
+        percentage = (isMatch / testLeng) * 100
+        pround = round(percentage, 2)
+        #print(pround,'%')
+
+        return pround
+
+
+

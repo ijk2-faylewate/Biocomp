@@ -1,4 +1,7 @@
 from ruleStructure import conditionAndOutputFromFile
+
+data3Threshold = 0.5
+
 def data(datafile, condLength):
     returnData = []
     f = open(datafile, 'r')
@@ -39,12 +42,17 @@ def floatData(datafile, condLength):
     for x in range(len(dFromFile)):
         for y in range(condLength):
             if y < condLength - 1:
-                rule.condition.append(dFromFile[x][y])
+                if float(dFromFile[x][y]) >= data3Threshold:
+                    rule.condition.append(1)
+                elif float(dFromFile[x][y]) < data3Threshold:
+                    rule.condition.append(0)
             else:
-                rule.output = dFromFile[x][y]
+                rule.output = int(dFromFile[x][y])
 
         returnData.append(rule)
         rule = conditionAndOutputFromFile()
 
     return returnData
+
+
 
